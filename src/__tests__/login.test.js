@@ -1,4 +1,4 @@
-const Login =  require('../views/Login')
+import Login from '../views/Login'
 import { mount } from '@vue/test-utils'
 
 describe('Login', () => {
