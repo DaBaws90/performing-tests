@@ -9,18 +9,23 @@ import Vuex from 'vuex'
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
-interceptorsSetup()
+// interceptorsSetup()
 
 Vue.use(Vuex)
 const storeConfig = storeConfiguration()
 const store = new Vuex.Store(storeConfig)
+interceptorsSetup(store)
 
 new Vue({
   router,
   store,
   beforeCreate () {
     if (!sessionStorage.getItem('accessToken')) {
+      this.$store.commit('setLoggedIn', false)
       router.push('/')
+    } else {
+      this.$store.commit('setToken', sessionStorage.getItem('accessToken'))
+      this.$store.commit('setLoggedIn', true)
     }
   },
   render: h => h(App),
