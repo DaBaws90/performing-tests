@@ -31,8 +31,11 @@ export default {
                     console.info('Token received', response.data)
                     sessionStorage.setItem('accessToken', response.data.access_token)
                     sessionStorage.setItem('refreshToken', response.data.refresh_token)
+                    this.$store.commit('setToken', response.data.access_token)
+                    this.$store.commit('setRefreshToken', response.data.refresh_token)
+                    this.$store.commit('setLoggedIn', true)
                 } catch(err) {
-                    console.warn(err)
+                    console.warn('Error', err)
                 }
             })() 
         }
