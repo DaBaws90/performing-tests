@@ -9,7 +9,6 @@ import Vuex from 'vuex'
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
-// interceptorsSetup()
 
 Vue.use(Vuex)
 const storeConfig = storeConfiguration()

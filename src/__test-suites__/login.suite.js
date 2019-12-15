@@ -1,38 +1,12 @@
 import Login from '../views/Login'
 import { mount, shallowMount } from '@vue/test-utils'
-// import * as requests from '../__mocks__/requests'
 import requests from '../__mocks__/requests'
 
-// import axios from 'axios'
-// jest.mock('axios') // Un-comment this line for axios requests mocking, as the axios import line
-
-/* We could create a global Vue instance and instantiate an individual, component-specific store instance in every test suite, if needed
-import { createLocalVue } from '@vue/test-utils'
-import Vuex from 'vuex'
-import storeConfiguration from '../store/storeConfiguration'
-
-const localVue = createLocalVue()
-localVue.use(Vuex)
-const storeConfig = storeConfiguration()
-const store = new Vuex.Store(storeConfig) // Move this line inside every test which needs a specific, non-shared store
-*/
-
-const localVue = requests.localVue
-const store = requests.store
-// Describe means is a test suite. test means is a test case
-describe.skip('Setting up general configuration for every suite', () => {
-    beforeAll(async () => {
-        jest.setTimeout(20000)
-    })
-    test('Store has been set properly', () => {
-        expect(requests.store).not.toBeUndefined()
-        expect(requests.store.state).toBeDefined()
-        expect(requests.store.getters).toBeDefined()
-    })
+export default (localVue, store) => {
     describe('Login component - Test suite', () => {
+        // const store = new Vuex.Store(storeConfiguration()) // Do this if we do not want to have a shared, global store, but a component specific store instance
+        // We need to inject the Vue and store instances to make use of v-if directive who relies on certain store states. Eg: if user is logged in. If not, a render exception would be throw
         const wrapper = shallowMount(Login, { localVue, store }) // shallowMount avoids rendering child components recursively
-        // const store = new Vuex.Store(storeConfiguration())
-        // const wrapper = mount(Login, { localVue, store }) // Do this if we do not want to have a shared, global store, but a component specific store instance
         test('Login component instantiates properly', () => {
             expect(wrapper.isVueInstance()).toBeTruthy()
         })
@@ -49,11 +23,12 @@ describe.skip('Setting up general configuration for every suite', () => {
                 expect(response.status).toBe(200)
                 expect(response.data).toHaveProperty('access_token')
                 try {
-                    requests.store.commit('setToken', response.data.access_token)
-                    requests.store.commit('setRefreshToken', response.data.refresh_token)
-                    // Do this if we do not want to have a shared, global store, but a component specific store instance
-                    // wrapper.vm.$store.commit('setToken', response.data.access_token)
-                    // wrapper.vm.$store.commit('setRefreshToken', response.data.refresh_token)
+                    // store.commit('setToken', response.data.access_token)
+                    // store.commit('setRefreshToken', response.data.refresh_token)
+                    // requests.store.commit('setToken', response.data.access_token)
+                    // requests.store.commit('setRefreshToken', response.data.refresh_token)
+                    wrapper.vm.$store.commit('setToken', response.data.access_token)
+                    wrapper.vm.$store.commit('setRefreshToken', response.data.refresh_token)
                 } catch(e) {
                     console.error(e.message)
                 }
@@ -64,10 +39,10 @@ describe.skip('Setting up general configuration for every suite', () => {
             }
         })
         test('accessToken has been stored properly', () => {
-            expect(requests.store.getters.accessToken).not.toBe(null)
+            expect(store.getters.accessToken).not.toBe(null)
         })
         test('refreshToken has been stored properly', () => {
-            expect(requests.store.getters.refreshToken).not.toBe(null)
+            expect(store.getters.refreshToken).not.toBe(null)
         })
         test.skip('interceptors are setting up headers properly', async () => {
             try {
@@ -92,4 +67,4 @@ describe.skip('Setting up general configuration for every suite', () => {
             }
         })
     })
-})
+}
