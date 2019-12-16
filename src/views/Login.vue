@@ -11,7 +11,6 @@
       </form>
       <div v-if="$store.state.session.loggedIn">
           Has iniciado sesión
-          <button @click="getGlobalExport">global</button>
       </div>
   </div>
 </template>
@@ -24,16 +23,6 @@ export default {
         userpassword: ''
     }),
     methods: {
-        getGlobalExport () {
-            (async () => {
-                try {
-                    // let response = await this.$http.get(process.env.VUE_APP_PYTHON_ENDPOINT + process.env.VUE_APP_ENDPOINT_PREFIX + 'dynamiclabels/load/' + 176 + '/' + 74 + '/' + 'jhsgkabkhaja')
-                    let response = await this.$http.get('LUL')
-                } catch (error) {
-                    console.error('error triggered', error)
-                }
-            })()
-        },
         login () {
             (async () => {
                 let data = {
@@ -42,14 +31,17 @@ export default {
                 }
                 try {
                     let response = await this.$http.post(process.env.VUE_APP_PYTHON_ENDPOINT + process.env.VUE_APP_ENDPOINT_PREFIX + 'login', data)
-                    // console.info('Token received', response.data)
-                    sessionStorage.setItem('accessToken', response.data.access_token)
-                    sessionStorage.setItem('refreshToken', response.data.refresh_token)
-                    // this.$store.commit('setToken', response.data.access_token)
-                    // this.$store.commit('setRefreshToken', response.data.refresh_token)
-                    // this.$store.commit('setLoggedIn', true)
+                    this.$store.commit('setToken', response.data.access_token)
+                    this.$store.commit('setRefreshToken', response.data.refresh_token)
+                    try {
+                        this.$http.get(process.env.VUE_APP_PYTHON_ENDPOINT + process.env.VUE_APP_ENDPOINT_PREFIX + 'operations/sms/getglobalexport/' + this.$store.getters.domainId + '/' + this.$store.getters.userId + '/' + this.$store.getters.role)
+                        this.$store.commit('setGlobalExport', 1)
+                    } catch (error) {
+                        console.error(error)
+                        this.$store.commit('setGlobalExport', 0)
+                    }
                 } catch(err) {
-                    console.warn('Error', err)
+                    console.error('Error', err)
                 }
             })() 
         }

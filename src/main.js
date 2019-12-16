@@ -20,11 +20,11 @@ new Vue({
   store,
   beforeCreate () {
     if (!sessionStorage.getItem('accessToken')) {
-      this.$store.commit('setLoggedIn', false)
+      this.$store.dispatch('logout') 
       router.push('/')
     } else {
       this.$store.commit('setToken', sessionStorage.getItem('accessToken'))
-      this.$store.commit('setLoggedIn', true)
+      this.$store.commit('setRefreshToken', sessionStorage.getItem('refreshToken'))
     }
   },
   render: h => h(App),

@@ -1,8 +1,7 @@
 export default {
-    logout: () => {
-        state.session.accessToken = null,
-        state.session.refreshToken = null,
-        state.session.loggedIn = null,
+    logout: ({commit}) => {
+        commit('setSession', {}),
+        commit('setSessionData', {})
         sessionStorage.removeItem('accessToken')
         sessionStorage.removeItem('refreshToken')
     }

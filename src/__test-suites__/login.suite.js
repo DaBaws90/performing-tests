@@ -16,7 +16,7 @@ export default (localVue, store) => {
         test('Login method exists', () => {
             expect(wrapper.vm.login).toBeDefined()
         })
-        test('Login service is properly consumed', async() => { // We should handle both success and failure cases in different test to avoid using console.log
+        test('Login service is consumed with or without error', async() => { // We should handle both success and failure cases in different test to avoid using console.log
             expect.assertions(2)
             try {
                 let response = await requests.login()
@@ -33,9 +33,10 @@ export default (localVue, store) => {
                     console.error(e.message)
                 }
             } catch(e) {
-                console.error('Error with status', e.response.status, e.response.data)
-                expect(e.response.status).toBe((400 || 404 || 500))
-                expect(e.response.data.error_msg).toBeDefined()
+                console.error('Error with status', e.response.status)
+                // console.error('Error with status', e.response.status, e.response.data)
+                expect([400, 404, 500]).toContain(e.response.status)
+                expect(e.response.data).toBeDefined()
             }
         })
         test('accessToken has been stored properly', () => {
@@ -44,12 +45,13 @@ export default (localVue, store) => {
         test('refreshToken has been stored properly', () => {
             expect(store.getters.refreshToken).not.toBe(null)
         })
-        test.skip('interceptors are setting up headers properly', async () => {
+        test('interceptors are setting up headers properly', async () => {
+            expect.assertions(1)
             try {
-                let response = await requests.dummyRequest()
-                console.log(response)
+                await requests.dummyRequest()
             } catch (error) {
-                console.error(error)
+                // console.error(error)
+                expect(error.config.headers).toHaveProperty('Authorization')
             }
         })
         // Tests axios mocking requests (default implmentation)
