@@ -1,6 +1,7 @@
 import requests from '../__mocks__/requests'
 
 import loginTestSuite from '../__test-suites__/login.suite'
+import testComponentSuite from '../__test-suites__/test-component.suite'
 
 // import axios from 'axios'
 // jest.mock('axios') // Un-comment these lines for axios requests mocking
@@ -30,9 +31,18 @@ describe('General Suite -> Setting up general configuration for every suite', ()
     // Login Test Suite
     loginTestSuite(requests.localVue, requests.store) // We send as args the Vue and store instances we are going to share across components
     // More Test Suites for components declared below...
-
+    testComponentSuite(requests.localVue, requests.store)
     // End of components test suites declaration -------------------------------------------
     test('Store mantains its state across multiple tests', () => {
+        expect.assertions(2)
         expect(requests.store.getters.accessToken).not.toBe(null)
+        expect(requests.store.getters.sessionData).toMatchObject({ // No need to declare every property (passes the test with partial matching)
+            userid: expect.any(Number),
+            domainid: expect.any(Number),
+            username: expect.any(String),
+            role: expect.any(Number),
+            group: expect.any(String),
+            domainName: expect.any(String)
+        })
     })
 })
